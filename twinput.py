@@ -38,17 +38,19 @@ def parse_todos(text):
         except AttributeError:
             pass
 
-        # Get the task context
-        try:
-            task["tags"] = [re.search(r"@(\S+)", line).group(1)]
-        except AttributeError:
-            pass
-
         # Get the task project
         try:
             task["project"] = re.search(r"\+(\S+)", line).group(1)
         except AttributeError:
             pass
+
+        # Get the task context(s)
+        task["tags"] = []
+        for match in re.finditer(r"@(\S+)", line):
+            try:
+                task["tags"].append(match.group(1))
+            except AttributeError:
+                pass
 
         # Get any other tags
         for match in re.finditer(r"(\w+):(\w+)", line):

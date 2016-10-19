@@ -71,7 +71,10 @@ def parse_todos(text):
 
 def main():
     # Initialize the file buffer
-    initial_message = b"#(N) \"Task\" @CONTEXT +PROJECT due: scheduled:"
+    initial_message = b"# TaskWarrior Input 0.1.2\n"
+    initial_message += b"# www.the-hawk.us\n"
+    initial_message += b"#\n# Input tasks in the form:\n"
+    initial_message += b"#    (N) \"Task\" @CONTEXT +PROJECT due: scheduled:"
 
     # Open editor for input
     with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:

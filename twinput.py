@@ -2,9 +2,10 @@
 
 import tempfile, os, re
 from taskw import TaskWarrior
+from taskw.exceptions import TaskwarriorError
 from subprocess import call
 
-# Get the system $EDITOR, default to Vim
+# Get the system editor, defaulting to Vim
 EDITOR = os.environ.get("EDITOR", "vim")
 
 # Load TaskWarrior
@@ -25,12 +26,17 @@ def parse_todos(text):
         try:
             description = re.search(r"\"(.+)\"", line).group(1)
         except AttributeError:
-            print("Couldn't description for " + line)
+            print("Couldn't parse description for " + line)
             continue
 
         # Get the Taskwarrior task
-        task = taskw.task_add(description)
-        task_id = task["id"]
+        try:
+            task = taskw.task_add(description)
+            task_id = task["id"]
+        except TaskwarriorError as err:
+            msg = err.stderr.decode("utf-8").split("\n")[-1]
+            print("Adding task " + description + " failed:\n\t" + msg)
+            continue
 
         # Get the task priority
         try:
@@ -53,28 +59,34 @@ def parse_todos(text):
                 pass
 
         # Get any other tags
-        for match in re.finditer(r"(\w+):(\w+)", line):
+        for match in re.finditer(r"(\w+):(\S+)", line):
             try:
                 task[match.group(1)] = match.group(2)
             except (AttributeError, IndexError):
                 pass
 
         # Attempt to update tasks
-        taskw.task_update(task)
-
-        # Make sure description didn't go away
-        (_, task) = taskw.get_task(id=task_id)
-        if task["description"] != description:
-            task["description"] = description
+        try:
             taskw.task_update(task)
+
+            # Make sure description didn't go away
+            (_, task) = taskw.get_task(id=task_id)
+            if task["description"] != description:
+                task["description"] = description
+                taskw.task_update(task)
+        except TaskwarriorError as err:
+            msg = err.stderr.decode("utf-8").split("\n")[-1]
+            print("Adding task " + description + " failed:\n\t" + msg)
+            taskw.task_delete(id=task_id)
 
 
 def main():
     # Initialize the file buffer
-    initial_message = b"# TaskWarrior Input 0.1.2\n"
+    initial_message = b"# TaskWarrior Input 0.1.3\n"
     initial_message += b"# www.the-hawk.us\n"
     initial_message += b"#\n# Input tasks in the form:\n"
     initial_message += b"#    (N) \"Task\" @CONTEXT +PROJECT due: scheduled:"
+    initial_message += b"\n\n"
 
     # Open editor for input
     with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:

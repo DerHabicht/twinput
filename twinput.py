@@ -27,7 +27,7 @@ from sys import argv, exit
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 0.2.0a"
+VERSION = "TaskWarrior Input 0.2.1a"
 
 # Load TaskWarrior
 taskw = TaskWarrior()
@@ -183,7 +183,7 @@ def open_file_buffer(lines=None):
 def print_usage():
     print("\n    " + VERSION)
     print("    www.the-hawk.us")
-    print("\n    Usage: " + argv[0] + " [-e|--editor {EDITOR}]\n")
+    print("\n    Usage: " + argv[0] + " [-e|--editor {EDITOR}] [-g|--gitgrep]\n")
 
     exit()
 
@@ -191,8 +191,6 @@ def print_usage():
 def run_git_grep():
     with open(".twparse", "r") as template_file:
         template = template_file.readline()
-
-    print(template)
 
     result = run(["git", "grep", "TODO:"], stdout=PIPE).stdout.decode()
     lines = result.split("\n")
@@ -235,5 +233,7 @@ if __name__ == "__main__":
             elif arg == "-g" or arg == "--gitgrep":
                 run_git_grep()
             else:
-                get_direct_input()
+                print_usage()
+    else:
+        get_direct_input()
 

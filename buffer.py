@@ -13,7 +13,7 @@ def get_header(version):
 
 
 def get_fail_message(failed_lines):
-    if not failed_lines:
+    if failed_lines:
         message = ("# The following lines were not successfully "
                    "imported into Taskwarrior.\n"
                    "# Uncomment to re-attempt parsing or leave "
@@ -29,7 +29,7 @@ def get_fail_message(failed_lines):
 
         return message.encode("utf-8")
     else:
-        return ""
+        return "".encode("utf-8")
 
 
 def open_file_buffer(initial_message, editor="vim"):

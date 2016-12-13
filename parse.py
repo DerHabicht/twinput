@@ -1,11 +1,7 @@
 from hashlib import md5
 from re import finditer, search, sub
-from os import environ
-from tempfile import NamedTemporaryFile
-from taskw import TaskWarrior
 from taskw.exceptions import TaskwarriorError
-from subprocess import call, run, PIPE
-from sys import argv, exit
+from subprocess import run, PIPE
 
 
 def git_grep_todos(directory):

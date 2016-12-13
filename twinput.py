@@ -18,21 +18,18 @@
 # TODO: Add a logging facility
 # TODO: Write docstrings
 
-from hashlib import md5
-from re import finditer, search, sub
+from curses import wrapper
 from os import environ, getcwd
-from tempfile import NamedTemporaryFile
 from taskw import TaskWarrior
-from taskw.exceptions import TaskwarriorError
-from subprocess import call, run, PIPE
-from sys import argv, exit
+from sys import argv
 
 from buffer import get_header, get_fail_message, open_file_buffer
+from interactive import controller
 from parse import git_grep_todos, parse_todos
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 0.2.1a"
+VERSION = "TaskWarrior Input 0.3.0a"
 
 # Load TaskWarrior
 taskw = TaskWarrior()
@@ -66,6 +63,8 @@ if __name__ == "__main__":
             elif arg == "-g" or arg == "--gitgrep":
                 grepd = git_grep_todos(getcwd())
                 parse_todos(taskw, grepd)
+            elif arg == "-i" or arg == "--interactive":
+                wrapper(controller, taskw, VERSION)
             else:
                 print("\n" + "Bad argument" + "\n")
     else:

@@ -29,7 +29,7 @@ from parse import git_grep_todos, parse_todos
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 0.3.1a"
+VERSION = "TaskWarrior Input 1.0.0-rc1"
 
 # Load TaskWarrior
 taskw = TaskWarrior()

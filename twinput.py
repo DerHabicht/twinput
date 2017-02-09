@@ -18,6 +18,7 @@
 # TODO: Add a logging facility
 # TODO: Write docstrings
 
+from curses import wrapper
 from os import environ, getcwd
 from taskw import TaskWarrior
 from taskw.exceptions import TaskwarriorError
@@ -25,10 +26,11 @@ from sys import argv
 
 from buffer import get_header, get_fail_message, open_file_buffer
 from parse import git_grep_todos, parse_todos, read_pim
+from interactive import scheduler
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 1.0.0-rc2"
+VERSION = "TaskWarrior Input 1.0.0-rc3"
 
 # Load TaskWarrior
 taskw = TaskWarrior()
@@ -83,6 +85,8 @@ if __name__ == "__main__":
                         to_parse = open_file_buffer(initial_message,
                                                     editor=EDITOR)
                         failed = parse_todos(taskw, to_parse)
+                elif arg == "-s" or arg == "--scheduler":
+                    wrapper(scheduler)
                 else:
                     print("\n" + "Bad argument" + "\n")
         else:

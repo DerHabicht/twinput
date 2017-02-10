@@ -3,3 +3,4 @@ settings.py
 .idea/*
 logs/*
 __pycache__/
+docs/*

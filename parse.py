@@ -24,7 +24,7 @@ def git_grep_todos(directory):
     with open(directory + "/.twparse", "r") as template_file:
         template = template_file.readline().strip()
 
-    result = run(["git", "grep", "-n", "TODO:"], cwd=directory,
+    result = run(["git", "grep", "-n", "'\sTODO:'"], cwd=directory,
                  stdout=PIPE).stdout.decode()
     lines = result.split("\n")
 

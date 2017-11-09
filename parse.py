@@ -32,7 +32,7 @@ def git_grep_todos(directory):
     for line in lines:
         try:
             task = search(r"\s+TODO:\s([\w\s]+)", line).group(1)
-            task = sub(r"\$TODO", task, template)
+            task = sub(r"\${TODO}", task, template)
             text += task
         except AttributeError:
             pass

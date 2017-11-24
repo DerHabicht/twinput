@@ -24,14 +24,14 @@ def git_grep_todos(directory):
     with open(directory + "/.twparse", "r") as template_file:
         template = template_file.readline().strip()
 
-    result = run(["git", "grep", "-n", "'\sTODO:'"], cwd=directory,
+    result = run(["git", "grep", "-n", "TODO:"], cwd=directory,
                  stdout=PIPE).stdout.decode()
     lines = result.split("\n")
 
     text = ""
     for line in lines:
         try:
-            regex = search(r"(.+?):(\d+):.+TODO:\s([\w\s]+)", line)
+            regex = search(r"(.+?):(\d+):.+TODO:\s([\w\s\'\",:;\.]+)", line)
             task = sub(r"\${TODO}", regex.group(3), template)
             text += (task
                      + f" twi_file:{regex.group(1)}"

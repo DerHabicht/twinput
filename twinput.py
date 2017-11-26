@@ -30,7 +30,7 @@ from interactive import scheduler
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 1.0.1"
+VERSION = "TaskWarrior Input 1.0.2"
 
 # Load TaskWarrior
 taskw = TaskWarrior()

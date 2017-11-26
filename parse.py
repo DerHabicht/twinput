@@ -292,9 +292,6 @@ def parse_todos(taskw, text):
                 task = taskw.task_add(description, twi_hash=twi_hash)
                 task_id = task["id"]
 
-                for key, value in task_data.items():
-                    task[key] = value
-
             except TaskwarriorError as err:
                 msg = err.stderr.decode("utf-8").split("\n")[-1]
                 failed_lines.append((line, msg))
@@ -302,9 +299,12 @@ def parse_todos(taskw, text):
 
         # Attempt to update tasks
         try:
+            for key, value in task_data.items():
+                task[key] = value
+
             taskw.task_update(task)
 
-            # TODO: Figure out why descriptions get dropped.
+            # TODO: Figure out why descriptions get dropped
             # This is here because task descriptions get dropped sometimes,
             # and I don't really know why.
             (_, task) = taskw.get_task(id=task_id)

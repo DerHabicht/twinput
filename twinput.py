@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (C) 2017 Robert Herschel Hawk
+# Copyright (C) 2018 Robert Herschel Hawk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,27 @@
 # TODO: Add a logging facility
 # TODO: Write docstrings
 
+"""TaskWarrior Input
+Copyright (C) 2018 Robert Herschel Hawk
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions. See the GNU General Public License v3
+for more details: https://www.gnu.org/licenses/gpl-3.0.en.html
+
+Usage:
+  twinput [options]
+
+Options:
+  -h, --help                     Show this screen.
+  -e EDITOR, --editor=EDITOR     Select editor for use with TWInput.
+  -g, --gitgrep                  Parse TODOs in this Git repository.
+  -i, --interactive              Iterate through each task interactively.
+  -o, --orgmode                  Parse Org agenda TODOs into TaskWarrior.
+  -s, --someday                  Show only someday tasks in interactive.
+  --version                      Show the current version.
+"""
+
+from docopt import docopt
 from curses import wrapper
 from os import environ, getcwd
 from taskw import TaskWarrior
@@ -30,7 +51,7 @@ from interactive import scheduler
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 1.0.2"
+VERSION = "TaskWarrior Input 1.1.0"
 
 # Load TaskWarrior
 taskw = TaskWarrior()
@@ -47,48 +68,39 @@ def get_direct_input():
 
 
 if __name__ == "__main__":
+    arguments = docopt(__doc__, version=VERSION)
+
+    if arguments["--editor"]:
+        EDITOR = arguments["--editor"]
+
     try:
-        if len(argv) > 1:
-            skip = [0]
-            for index, arg in enumerate(argv):
-                # Ignore the script name
-                if index in skip:
-                    continue
-
-                if arg == "-e" or arg == "--editor":
-                    try:
-                        EDITOR = argv[index + 1]
-                        skip.append(index + 1)
-                    except IndexError:
-                        print("\n" + VERSION + "\n")
-                elif arg == "-g" or arg == "--gitgrep":
-                    grepd = git_grep_todos(getcwd())
-                    failed = parse_todos(taskw, grepd)
-                    while failed:
-                        initial_message = (get_header(VERSION)
-                                           + get_fail_message(failed))
-                        to_parse = open_file_buffer(initial_message,
-                                                    editor=EDITOR)
-                        failed = parse_todos(taskw, to_parse)
-                elif arg == "-o" or arg == "--orgmode":
-                    try:
-                        pim_dir = environ["pim"]
-                    except KeyError:
-                        print("\n$pim environment variable is not set.\n")
-                        continue
-
-                    pim = read_pim(pim_dir)
-                    failed = parse_todos(taskw, pim)
-                    while failed:
-                        initial_message = (get_header(VERSION)
-                                           + get_fail_message(failed))
-                        to_parse = open_file_buffer(initial_message,
-                                                    editor=EDITOR)
-                        failed = parse_todos(taskw, to_parse)
-                elif arg == "-s" or arg == "--scheduler":
-                    wrapper(scheduler)
-                else:
-                    print("\n" + "Bad argument" + "\n")
+        if arguments["--gitgrep"]:
+            grepd = git_grep_todos(getcwd())
+            failed = parse_todos(taskw, grepd)
+            while failed:
+                initial_message = (get_header(VERSION)
+                                   + get_fail_message(failed))
+                to_parse = open_file_buffer(initial_message,
+                                            editor=EDITOR)
+                failed = parse_todos(taskw, to_parse)
+        elif arguments["--interactive"]:
+            if arguments["--someday"]:
+                wrapper(scheduler, True)
+            else:
+                wrapper(scheduler, False)
+        elif arguments["--orgmode"]:
+            try:
+                pim_dir = environ["pim"]
+                pim = read_pim(pim_dir)
+                failed = parse_todos(taskw, pim)
+                while failed:
+                    initial_message = (get_header(VERSION)
+                                       + get_fail_message(failed))
+                    to_parse = open_file_buffer(initial_message,
+                                                editor=EDITOR)
+                    failed = parse_todos(taskw, to_parse)
+            except KeyError:
+                print("\n$pim environment variable is not set.\n")
         else:
             get_direct_input()
 

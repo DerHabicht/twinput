@@ -61,7 +61,7 @@ def draw_task(stdscr, task, flash, pos, task_count, show_help):
     stdscr.clear()
     stdscr.addstr(0, 0, f'{pos + 1} of {task_count} tasks:')
 
-    stdscr.addstr(2, 0, f'{task["description"]}')
+    stdscr.addstr(2, 0, task["description"])
     stdscr.addstr(3, 2, f'ID:       {task["id"]}')
     stdscr.addstr(4, 2, f'Context:  {get_context()}')
     stdscr.addstr(5, 2, f'Project:  {task.get("project", "NONE")}')
@@ -100,7 +100,7 @@ def update_effort(stdscr, tw, task):
     tw.task_update(task)
 
 
-def scheduler(stdscr, someday, flash=None):
+def interactive(stdscr, someday, flash=None):
     noecho()
     curs_set(False)
 

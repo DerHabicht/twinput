@@ -34,7 +34,10 @@ Options:
   -g, --gitgrep                  Parse TODOs in this Git repository.
   -i, --interactive              Iterate through each task interactively.
   -o, --orgmode                  Parse Org agenda TODOs into TaskWarrior.
+  -p ID, --pomodoro=ID           Start a timer then increment Pomodoro UDA.
   -s, --someday                  Show only someday tasks in interactive.
+  -t MIN, --time=MIN             Set the time (in minutes) for a timer.
+  --debug                        Pause to allow connecting a debugger.
   --version                      Show the current version.
 """
 
@@ -43,15 +46,15 @@ from curses import wrapper
 from os import environ, getcwd
 from taskw import TaskWarrior
 from taskw.exceptions import TaskwarriorError
-from sys import argv
 
 from buffer import get_header, get_fail_message, open_file_buffer
 from parse import git_grep_todos, parse_todos, read_pim
-from interactive import scheduler
+from interactive import interactive
+from pomodoro import timer
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 1.1.0"
+VERSION = "TaskWarrior Input 1.2.0"
 
 # Load TaskWarrior
 taskw = TaskWarrior()
@@ -70,6 +73,9 @@ def get_direct_input():
 if __name__ == "__main__":
     arguments = docopt(__doc__, version=VERSION)
 
+    if arguments["--debug"]:
+        input("Press [ENTER] to continue...")
+
     if arguments["--editor"]:
         EDITOR = arguments["--editor"]
 
@@ -85,9 +91,9 @@ if __name__ == "__main__":
                 failed = parse_todos(taskw, to_parse)
         elif arguments["--interactive"]:
             if arguments["--someday"]:
-                wrapper(scheduler, True)
+                wrapper(interactive, True)
             else:
-                wrapper(scheduler, False)
+                wrapper(interactive, False)
         elif arguments["--orgmode"]:
             try:
                 pim_dir = environ["pim"]
@@ -101,6 +107,18 @@ if __name__ == "__main__":
                     failed = parse_todos(taskw, to_parse)
             except KeyError:
                 print("\n$pim environment variable is not set.\n")
+        elif arguments["--pomodoro"]:
+            try:
+                if arguments["--time"]:
+                    wrapper(timer,
+                            int(arguments["--pomodoro"]),
+                            float(arguments["--time"]))
+                else:
+                    wrapper(timer, int(arguments["--pomodoro"]))
+            except (ValueError, TaskwarriorError):
+                print("Argument to --pomodoro must be a valid task ID.")
+            except KeyboardInterrupt:
+                print("Clock interrupted. Pomodoro not counted.")
         else:
             get_direct_input()
 

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from curses import (curs_set, echo, noecho)
+from curses import (A_STANDOUT as EMPH, curs_set, echo, noecho)
 from taskw import TaskWarrior
 
 
@@ -65,7 +65,10 @@ def draw_task(stdscr, task, flash, pos, task_count, show_help):
     stdscr.addstr(3, 2, f'ID:       {task["id"]}')
     stdscr.addstr(4, 2, f'Context:  {get_context()}')
     stdscr.addstr(5, 2, f'Project:  {task.get("project", "NONE")}')
-    stdscr.addstr(6, 2, f'Effort:   {task.get("effort", "NONE")}')
+    if task["effort"] and (task["effort"] == -1 or task["effort"] > 7):
+        stdscr.addstr(6, 2, f'Effort:   {task.get("effort", "NONE")}', EMPH)
+    else:
+        stdscr.addstr(6, 2, f'Effort:   {task.get("effort", "NONE")}')
     stdscr.addstr(7, 2, f'Priority: {task["priority"]}')
     stdscr.addstr(8, 2, f'Due:      {task.get("due", "")}')
     stdscr.addstr(9, 2, f'Started:  {task.get("start", "")}')

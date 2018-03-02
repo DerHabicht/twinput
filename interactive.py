@@ -149,9 +149,8 @@ def interactive(stdscr, someday, flash=None):
                 tasks[pos]["tags"].remove("someday")
             else:
                 tasks[pos]["tags"].append("someday")
-        elif c == ord("?"):
-            show_help = not show_help
 
             tw.task_update(tasks[pos])
             tasks, pos = refresh(tw, someday, pos)
-
+        elif c == ord("?"):
+            show_help = not show_help

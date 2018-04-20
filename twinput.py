@@ -55,7 +55,7 @@ from pomodoro import timer
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 1.2.1"
+VERSION = "TaskWarrior Input 1.3.0"
 
 # Load TaskWarrior
 taskw = TaskWarrior()

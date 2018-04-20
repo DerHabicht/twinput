@@ -31,6 +31,7 @@ Usage:
 Options:
   -h, --help                     Show this screen.
   -e EDITOR, --editor=EDITOR     Select editor for use with TWInput.
+  -f FILE, --file=FILE           Read input from file.
   -g, --gitgrep                  Parse TODOs in this Git repository.
   -i, --interactive              Iterate through each task interactively.
   -o, --orgmode                  Parse Org agenda TODOs into TaskWarrior.
@@ -68,6 +69,17 @@ def get_direct_input():
         failed = parse_todos(taskw, to_parse)
         if not failed:
             break
+
+
+def read_from_file(filename):
+    with open(filename, 'r') as infile:
+        to_parse = infile.read()
+
+    failed = parse_todos(taskw, to_parse)
+    while failed:
+        initial_message = get_header(VERSION) + get_fail_message(failed)
+        to_parse = open_file_buffer(initial_message, editor=EDITOR)
+        failed = parse_todos(taskw, to_parse)
 
 
 if __name__ == "__main__":
@@ -119,6 +131,8 @@ if __name__ == "__main__":
                 print("Argument to --pomodoro must be a valid task ID.")
             except KeyboardInterrupt:
                 print("Clock interrupted. Pomodoro not counted.")
+        elif arguments["--file"]:
+            read_from_file(arguments["--file"])
         else:
             get_direct_input()
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env pipenv-shebang
 
 # Copyright (C) 2018 Robert Herschel Hawk
 #

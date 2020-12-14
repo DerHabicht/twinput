@@ -1,6 +1,0 @@
-settings.py
-*.swp
-.idea/*
-logs/*
-__pycache__/
-docs/*

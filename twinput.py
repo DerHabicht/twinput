@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env pipenv-shebang
 
 # Copyright (C) 2018 Robert Herschel Hawk
 #
@@ -55,7 +55,7 @@ from pomodoro import timer
 
 # Get the system editor, defaulting to Vim
 EDITOR = environ.get("EDITOR", "vim")
-VERSION = "TaskWarrior Input 1.3.0"
+VERSION = "TaskWarrior Input 1.3.1"
 
 # Load TaskWarrior
 taskw = TaskWarrior()
